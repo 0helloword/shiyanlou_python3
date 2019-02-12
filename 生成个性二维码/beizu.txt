@@ -1,0 +1,5 @@
+1.生成requirements.txt--环境依赖文件
+在项目下生成requirements.txt文件
+python项目中必须包含一个 requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。
+requirements.txt可以通过pip命令自动生成和安装
+在项目目录下打开cmd,输入pip3 freeze>requirements.txt
