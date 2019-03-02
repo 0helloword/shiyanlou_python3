@@ -25,10 +25,10 @@ class ChatServer(asyncore.dispatcher):
         self.bind(('', port))
         self.listen(5)
         self.users = {}#初始化用户
-        self.main_room = ChatRoom(self)#定义聊天室
+        self.main_room = ChatRoom()#定义聊天室
 
     def handle_accept(self):
-        conn, addr = self.accept()
+        conn, addr = self.accept()#accept()会等待并返回一个客户端的连接
         ChatSession(self, conn)
 
 class ChatSession(asynchat.async_chat):
@@ -76,6 +76,7 @@ class CommandHandler:#命令处理类
         
     def handle(self,session,line):
         line=line.decode()
+#         print(line)
         #命令处理
         if not line.strip():#如果line去掉左右空格后为空
             return
@@ -87,8 +88,9 @@ class CommandHandler:#命令处理类
             line=''
         #通过协议代码执行相应的方法
         method=getattr(self,'do_'+cmd,None)#getattr()函数用于返回一个对象属性值。class A(object):bar = 1 >>>a = A(),getattr(a, 'bar')# 获取属性 bar值=1
+#         print(method)
         try:
-            method(session,line)
+            method(session,line)#跳转到对应的方法，如do_look,do_say
         except TypeError:
             self.unknown(session, cmd)
 
@@ -107,10 +109,24 @@ class Room(CommandHandler):
         self.sessions.remove(session)
         
     def broadcast(self,line):
+#         print(self.sessions)
+#         print(line)
         #向所有用户发送指定消息
         #使用asynchat.async_chat.push方法发送数据
         for session in self.sessions:
             session.push(line)
+    
+    def sendDesignMsg(self,msg,sendpeople,topeople):
+        #对指定用户发送消息
+        print(sendpeople,topeople,self.sessions,self.server.users)
+        if topeople in self.server.users:
+            session1=self.server.users[sendpeople]#获取发信人的session
+            session2=self.server.users[topeople]#获取收信人的session
+            session1.push(msg)#发信人和收信人的聊天页面均显示消息
+            session2.push(msg)
+        else:
+            session=self.server.users[sendpeople]
+            session.push(b'Username not exist\n')
             
     def do_logout(self,session,line):
         #退出房间
@@ -169,6 +185,14 @@ class ChatRoom(Room):
     def do_say(self,session,line):
         #发送消息
         self.broadcast((session.name+':'+line+'\n').encode('utf-8'))
+     
+    def do_DesignSay(self,session,line):
+        #发送消息给指定的用户
+        words=line.split('&',1)#以空格为分隔符，分隔成两个，发送的消息和指定收信人的姓名
+        msg=words[0]#获取发送消息内容
+        topeople=words[1]#获取收信人名称
+        sendpeople=session.name#获取发信人的名称
+        self.sendDesignMsg((session.name+':'+msg+'\n').encode('utf-8'),sendpeople,topeople)
         
     def do_look(self,session,line):
         #查看在线用户
