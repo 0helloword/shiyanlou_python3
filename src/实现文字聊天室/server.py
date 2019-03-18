@@ -25,7 +25,7 @@ class ChatServer(asyncore.dispatcher):
         self.bind(('', port))
         self.listen(5)
         self.users = {}#初始化用户
-        self.main_room = ChatRoom()#定义聊天室
+        self.main_room = ChatRoom(self)#定义聊天室
 
     def handle_accept(self):
         conn, addr = self.accept()#accept()会等待并返回一个客户端的连接
@@ -34,6 +34,9 @@ class ChatServer(asyncore.dispatcher):
 class ChatSession(asynchat.async_chat):
     #负责和客户端通信
     def __init__(self,server,sock):
+#         print(server,sock)
+        #server:<__main__.ChatServer listening :6666 at 0x2994860>
+        #sock:<socket.socket fd=204, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 6666), raddr=('127.0.0.1', 52148)>
         asynchat.async_chat.__init__(self, sock)
         self.server=server
         self.set_terminator(b'\n')#定义终止符
@@ -109,8 +112,6 @@ class Room(CommandHandler):
         self.sessions.remove(session)
         
     def broadcast(self,line):
-#         print(self.sessions)
-#         print(line)
         #向所有用户发送指定消息
         #使用asynchat.async_chat.push方法发送数据
         for session in self.sessions:
@@ -158,6 +159,7 @@ class LoginRoom(Room):
         else:
             session.name=name
             session.enter(self.server.main_room)
+
                         
 class LogoutRoom(Room):
     #处理退出用户
@@ -188,7 +190,7 @@ class ChatRoom(Room):
      
     def do_DesignSay(self,session,line):
         #发送消息给指定的用户
-        words=line.split('&',1)#以空格为分隔符，分隔成两个，发送的消息和指定收信人的姓名
+        words=line.split('&',1)#以&为分隔符，分隔成两个，发送的消息和指定收信人的姓名
         msg=words[0]#获取发送消息内容
         topeople=words[1]#获取收信人名称
         sendpeople=session.name#获取发信人的名称
