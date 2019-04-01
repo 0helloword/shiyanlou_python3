@@ -1,2 +1,5 @@
 eclipse.preferences.version=1
+encoding//src/2048/2048.py=utf-8
+encoding//src/2048/20481.py=utf-8
+encoding//src/2048/cursestest.py=utf-8
 encoding//src/web-server/server.py=utf-8
