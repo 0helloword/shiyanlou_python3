@@ -1,5 +1,7 @@
 eclipse.preferences.version=1
 encoding//src/2048/2048.py=utf-8
-encoding//src/2048/20481.py=utf-8
+encoding//src/2048/2048_refactoring.py=utf-8
 encoding//src/2048/cursestest.py=utf-8
 encoding//src/web-server/server.py=utf-8
+encoding//src/\u5B9E\u73B0\u6587\u5B57\u804A\u5929\u5BA4/panel.py=utf-8
+encoding//src/\u5B9E\u73B0\u6587\u5B57\u804A\u5929\u5BA4/wxExample.py=utf-8

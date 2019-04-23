@@ -229,7 +229,7 @@ if __name__ == '__main__':
     #一种是在实例化时传入ip地址连接主机（con = telnetlib.Telnet(host_ip,port=23)）
     #第二种是，先不传参数进行实例化再用open方法连接主机
     con = telnetlib.Telnet()#实例化一个telnet连接主机
-    LoginFrame(None, -1, title="Login", size=(320, 250))#id为-1表示主窗口
+    LoginFrame(None, -1, title="Login", size=(320, 250))#id值, -1的话程序会自动产生一个id
     app.MainLoop()#启动主循环
 
 
