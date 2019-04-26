@@ -79,7 +79,7 @@ class Frame(wx.Frame):
     def onKeyDown(self, event):
         '与按键事件中得到对应的键码'
         keyCode = event.GetKeyCode()
-#         print(keyCode)
+        print(keyCode)
         if keyCode == wx.WXK_UP:#doMove的参数是slideUpDown或者slideLeftRight方法返回的元组。 *代表元组，**代表字典,返回true(false)和score
             self.doMove(*self.slideUpDown(True))
         elif keyCode == wx.WXK_DOWN:
@@ -93,6 +93,7 @@ class Frame(wx.Frame):
         elif keyCode == 13:#点击enter，重新开始游戏
             self.initGame(self.win_value)
             self.drawAll()
+            
             
 
     def onSize(self, event):#onSize是在窗口改变时重新initBuffer，并调用drawAll来画界面
@@ -162,13 +163,13 @@ class Frame(wx.Frame):
         '字体前景色'
         dc.SetTextForeground((119, 110, 101))
         '绘制的文本内容,开始绘制的坐标(x,y)，使用当前的字体前景背景色'
-        dc.DrawText('2048', 15, 10)
+        dc.DrawText('2048', 15, 3)
 
     def drawLabel(self, dc):
         dc.SetFont(self.smFont)
         dc.SetTextForeground((119, 110, 101))
-        dc.DrawText('合并相同数字得2048',15,70)
-        dc.DrawText('按Enter键重置游戏',15,90)
+        dc.DrawText('合并相同数字得2048',15,65)
+        dc.DrawText('按Enter键重置游戏',15,85)
 
     def drawScore(self, dc):
         dc.SetFont(self.smFont)
@@ -257,7 +258,13 @@ class Frame(wx.Frame):
             if move:           
                 self.putTile()#'每移动一次则生成一个2或4'
                 self.drawChange(score)
-        
+                if self.isGameOver():
+                    if wx.MessageBox('游戏结束，是否重新开始?', '(*^▽^*)',
+                                     wx.YES_NO|wx.ICON_INFORMATION) == wx.YES:
+                        bstScore = self.bstScore
+                        self.initGame(self.win_value)
+                        self.bstScore = bstScore
+                        self.drawAll()
             
                 
     def slideUpDown(self, up):
@@ -287,7 +294,6 @@ class Frame(wx.Frame):
 
         '比较当前数据与原始数据是否发生变化'
         return oldData != self.data, score
-
 
 
     def slideLeftRight(self, left):
@@ -365,7 +371,6 @@ class Frame(wx.Frame):
             flag = True
         if not flag:
             self.data = copyData
-
         return flag
     
     def winGame(self,move,score):
